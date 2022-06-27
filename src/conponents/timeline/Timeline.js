@@ -5,11 +5,12 @@ import TweetBox from './TweetBox'
 import db from '../../firebase';
 import { collection ,  onSnapshot, orderBy, query } from 'firebase/firestore';
 import FlipMove from 'react-flip-move';
-
+import {useSelector, useDispatch} from 'react-redux'
+import {updatePosts} from '../../postsSlice'
 function Timeline() {
-  const [posts,setPosts] = useState([]);
-
-
+  // const [posts,setPosts] = useState([]);
+  const dispatch = useDispatch()
+  const posts = useSelector(state => state.posts.values)
   useEffect(() => {
     const postData = collection(db , "posts");
     const q = query(postData, orderBy("timestamp" , "desc"));
@@ -19,9 +20,11 @@ function Timeline() {
 
     //リアルタイムにデータを取得する。
     onSnapshot(q,(querySnapshot) => {
-      setPosts(querySnapshot.docs.map((doc) => doc.data()));    })
+      const p = querySnapshot.docs.map((doc) => doc.data())
+      console.log(p)
+      dispatch(updatePosts(p)   ) })
   } , []);
-
+console.log(posts)
   return (
     <div className='timeline'>
       {/* Header */}
